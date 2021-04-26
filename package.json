@@ -23,7 +23,7 @@
   "scripts": {
     "server": "set HTTPS=true && node-env-run index.js --exec nodemon | pino-colada",
     "start": "node-env-run index.js",
-    "heroku-postbuild": "cd ./client && NPM_CONFIG_PRODUCTION=false && yarn --prefix client && yarn build --prefix client"
+    "heroku-postbuild": "cd ./client && NPM_CONFIG_PRODUCTION=false && yarn  && yarn build "
   },
   "devDependencies": {
     "express-pino-logger": "^6.0.0",
