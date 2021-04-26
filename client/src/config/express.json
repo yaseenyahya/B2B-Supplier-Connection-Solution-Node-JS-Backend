@@ -1,0 +1,26 @@
+{
+"development": {
+    "port": 8080,
+    "graphql_endpoint":"graphql",
+    "graphql_domain":"https://axonmediaservice.finalhostplan.com",
+    "graphql_subscription_domain":"wss://axonmediaservice.finalhostplan.com",
+    "graphql_subscription_endpoint":"subscriptions",
+    "facebook_app_id":"182095643716855"
+},
+    "test": {
+        "port": 8080,
+        "graphql_endpoint":"graphql",
+        "graphql_domain":"http://localhost",
+        "graphql_subscription_domain":"wss://axonmediaservice.finalhostplan.com",
+        "graphql_subscription_endpoint":"subscriptions",
+        "facebook_app_id":"182095643716855"
+},
+    "production": {
+        "port": "",
+        "graphql_endpoint":"graphql",
+        "graphql_domain":"https://greenmarketingcrm.herokuapp.com",
+        "graphql_subscription_domain":"wss://greenmarketingcrm.herokuapp.com",
+        "graphql_subscription_endpoint":"subscriptions",
+        "facebook_app_id":"182095643716855"
+}
+}

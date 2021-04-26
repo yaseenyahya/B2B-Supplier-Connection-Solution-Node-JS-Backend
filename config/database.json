@@ -1,0 +1,24 @@
+{
+    "development": {
+        "username": "root",
+        "password": "",
+        "database": "greenmarketingcrm",
+        "host": "localhost",
+        "dialect": "mysql"
+    },
+    "test": {
+        "username": "root",
+        "password": "",
+        "database": "react_sequelize_test",
+        "host": "",
+        "dialect": "mysql"
+    },
+    "production": {
+        "username": "b75e288eef9501",
+        "password": "0da2380a",
+        "database": "heroku_2576c7ab5a1b9b5",
+        "host": "us-cdbr-east-03.cleardb.com",
+        "dialect": "mysql"
+    }
+
+}

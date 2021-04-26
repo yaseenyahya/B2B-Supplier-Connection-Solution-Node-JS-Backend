@@ -1,0 +1,81 @@
+{
+  "name": "greenmarketingcrm",
+  "version": "0.1.0",
+  "private": true,
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && pretty-quick --staged"
+    }
+  },
+  "dependencies": {
+    "@apollo/react-hooks": "^4.0.0",
+    "@date-io/date-fns": "^2.10.8",
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/pickers": "^3.3.10",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "apollo-boost": "^0.4.9",
+    "date-fns": "^2.21.1",
+    "debounce": "^1.2.1",
+    "filefy": "^0.1.10",
+    "fullscreen-react": "^1.0.4",
+    "graphql": "^15.5.0",
+    "husky": "^6.0.0",
+    "jspdf": "^2.3.1",
+    "jspdf-autotable": "^3.5.14",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "notistack": "^1.0.5",
+    "react": "^17.0.1",
+    "react-animation": "^1.2.2",
+    "react-apollo": "^3.1.5",
+    "react-beautiful-dnd": "^13.1.0",
+    "react-dom": "^17.0.1",
+    "react-double-scrollbar": "^0.0.15",
+    "react-easy-crop": "^3.3.2",
+    "react-flicker": "^1.1.1",
+    "react-lazyload": "^3.2.0",
+    "react-maskinput": "^3.2.0",
+    "react-redux": "^7.2.2",
+    "react-rnd": "^10.2.4",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
+    "react-scroll": "^1.8.1",
+    "react-text-mask": "^5.4.3",
+    "react-timeago": "^5.2.0",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
+    "subscriptions-transport-ws": "^0.9.18",
+    "validator": "^13.5.2",
+    "web-vitals": "^1.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "server": "set HTTPS=true&& set SSL_CRT_FILE=cert.pem&& set SSL_KEY_FILE=key.pem&& react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "prettify": "prettier --write **/*.js"
+   
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
