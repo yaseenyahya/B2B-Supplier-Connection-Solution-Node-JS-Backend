@@ -67,10 +67,11 @@ const server = new ApolloServer({
   },
   context: ({ req, res }) => ({ req, res }),
 });
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "client/build")));
-   app.get('*', (req, res) => {    res.sendfile(path.join(__dirname = 'client/build/index.html'));  })
-}
+//using one domain on server wit hsame port
+//if (process.env.NODE_ENV === "production") {
+ // app.use(express.static(path.join(__dirname, "client/build")));
+   //app.get('*', (req, res) => {    res.sendfile(path.join(__dirname = 'client/build/index.html'));  })
+//}
 app.use(async (req, res, next) => {
   const accessToken = req.cookies["access-token"];
   const refreshToken = req.cookies["refresh-token"];

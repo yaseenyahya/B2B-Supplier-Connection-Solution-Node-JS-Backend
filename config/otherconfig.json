@@ -7,7 +7,7 @@
         "REDIS_URL":"127.0.0.1:6379"
     },
     "production": {
-        "REDIS_URL":"redis://:pe630d44ce0fc172240de5306fc27580a411bcb33192fec4f4c4d03820ee7b783@ec2-52-72-225-130.compute-1.amazonaws.com:10659"
+        "REDIS_URL":"redis://:pfd99a32c439172faae46e7b812c4e380197999559a4170b593f74e5fcb412d28@ec2-18-207-76-40.compute-1.amazonaws.com:30359"
     }
 
 }
