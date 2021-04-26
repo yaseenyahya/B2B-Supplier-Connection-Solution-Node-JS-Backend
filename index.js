@@ -26,7 +26,6 @@ app.use(json({ limit: "200mb" }));
 
 const env = process.env.NODE_ENV || "development";
 
-
 var corsOptions = {
   // origin: config.front_end_url,
   origin: true,
@@ -68,7 +67,10 @@ const server = new ApolloServer({
   },
   context: ({ req, res }) => ({ req, res }),
 });
-
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "client/build")));
+  //  app.get('*', (req, res) => {    res.sendfile(path.join(__dirname = 'client/build/index.html'));  })}
+}
 app.use(async (req, res, next) => {
   const accessToken = req.cookies["access-token"];
   const refreshToken = req.cookies["refresh-token"];
@@ -161,8 +163,6 @@ db.sequelize
   })
   .catch((error) => console.log("This error occured", error));
 
-
-
 app.post("/webhook/", (req, res) => {
   let body = req.body;
 
@@ -192,7 +192,7 @@ app.post("/webhook/", (req, res) => {
               messageId: messageId,
               messagetype: isPage ? "outgoing" : "incoming",
               agentId: result,
-            })
+            });
             GraphQLResolvers_.Mutation.addchatdetail(null, {
               customerId: customerId,
               pageId: pageId,
@@ -244,15 +244,15 @@ const getUserFromChatCircle = async (customerId) => {
 
     if (chatData) {
       //agent last chated with customer
-     // var agentIsOnline = _.find(
-     //   chatCircleUsersWithChats,
-     //   (item) => item.agentId == chatData.agentId
-    //  );
+      // var agentIsOnline = _.find(
+      //   chatCircleUsersWithChats,
+      //   (item) => item.agentId == chatData.agentId
+      //  );
 
-     // if (agentIsOnline) {
-     //   return agentIsOnline.agentId;
-     // }
-     return chatData.agentId;
+      // if (agentIsOnline) {
+      //   return agentIsOnline.agentId;
+      // }
+      return chatData.agentId;
     }
     //agent have less chats
     var chatCircleUsersWithChatsTemp = _.cloneDeep(chatCircleUsersWithChats);
