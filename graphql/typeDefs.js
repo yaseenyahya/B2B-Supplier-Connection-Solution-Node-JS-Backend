@@ -93,6 +93,7 @@ module.exports = gql`
     picture: String
     settings: String
     labels: String
+    pagesData:String
   }
   type LeadForms {
     id: ID!
@@ -262,6 +263,7 @@ module.exports = gql`
       pageId: String!
       message: String!
       outgoingMessageId:String!
+      accesstoken:String
     ): QueryStatus
     markreadchat(
       id: ID!

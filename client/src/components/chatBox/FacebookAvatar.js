@@ -15,8 +15,9 @@ const FacebookAvatar = (props) => {
   const { item, type } = props;
   const includesObj = new includes();
   useEffect(() => {
+
     getData();
-  }, []);
+  }, [item]);
 
   const getData = () => {
     if (type == "page")
@@ -25,19 +26,24 @@ const FacebookAvatar = (props) => {
         item.pageId,
         props.chatBoxFacebookIDsWithProfileDetails,
         props.setChatBoxFacebookIDsWithProfileDetails,
-        setImageCallBack
+        setImageCallBack,
+        props.authPagesData
       );
     else if (type == "customer") {
       includesObj.resolveClientInfo(
         window.FB,
         item.customerId,
+        item.pageId,
         props.chatBoxFacebookIDsWithProfileDetails,
         props.setChatBoxFacebookIDsWithProfileDetails,
-        setImageCallBack
+        setImageCallBack,
+        props.authPagesData
       );
     }
   };
   const setImageCallBack = (result) => {
+    console.log("facebookAvatar",result)
+    if(result)
     setSrc(result.image);
   };
   return (
@@ -52,6 +58,7 @@ const FacebookAvatar = (props) => {
 const mapStateToProps = (state) => {
   return {
     ...state.ChatBoxReducer,
+    ...state.AuthReducer
   };
 };
 export default connect(mapStateToProps, {

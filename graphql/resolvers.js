@@ -17,6 +17,7 @@ const { RedisPubSub } = require("graphql-redis-subscriptions");
 const axios = require("axios");
 const otherconfig = require("../config/otherconfig.json");
 const moment = require("moment");
+const { printIntrospectionSchema } = require("graphql");
 const env = process.env.NODE_ENV || "development";
 const otherConfig = otherconfig[env];
 
@@ -82,15 +83,30 @@ module.exports = {
         },
       });
     },
-    me: (parent, args, { req }) => {
+    me: async (parent, args, { req }) => {
       req.userID = verifyTokenWithUserID(args, req);
       if (req.userID == null) return null;
 
-      return db.users.findOne({
+      var userData = await db.users.findOne({
         where: {
           id: req.userID,
         },
       });
+
+      var pagesData = await db.pages.findAll();
+
+      var pages = [];
+
+      pagesData.map((result) => {
+        pages.push({
+          pageId: result.pageId,
+          accesstoken: result.accesstoken,
+        });
+      });
+
+      userData.pagesData = JSON.stringify(pages);
+
+      return userData;
     },
 
     usersettings: (parent, args, { req }) => {
@@ -178,11 +194,8 @@ module.exports = {
       chatFollowUpDetail.forEach((element) => {
         var textparse = JSON.parse(element.messagetext);
         var dateOfFollowUp = moment(textparse[1], "yyyy-MM-DDTHH:mm").utc();
-        var CurrentDate = moment().utc().add(5, 'hours');
+        var CurrentDate = moment().utc().add(5, "hours");
 
-        console.log("dateOfFollowUp",dateOfFollowUp);
-        console.log("CurrentDate",CurrentDate);
-        console.log("CurrentDate.diff(dateOfFollowUp)",CurrentDate.diff(dateOfFollowUp))
 
         if (CurrentDate.diff(dateOfFollowUp) >= 0)
           followUpdata.push({
@@ -751,8 +764,7 @@ module.exports = {
 
       if (!errorEmptyCustomerId && !errorEmptyPageId && !errorEmptyMessage) {
         const qs = {
-          access_token:
-            "EAAClnXIorPcBALaqEOTfZA2vZCLk0s4UUejZB95P2F9Eh9YU6aiwRMzEQA3X4CnYMRdLRPf5fC784E1I4CZCqjsfbScQBCPS4UeU5ShDvyynS0uOyIIHjNzuxopZCZAXrCjYGzZB7jZCrgax9IjUmlmAYAN44rIYblMnPa97ivUjRQZDZD",
+          access_token: args.accesstoken,
           messaging_type: "RESPONSE",
           recipient: {
             id: args.customerId,

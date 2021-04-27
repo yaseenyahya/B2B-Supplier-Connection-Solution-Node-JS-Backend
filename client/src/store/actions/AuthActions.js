@@ -1,5 +1,6 @@
 import {
-  AUTH_SETTINGS, AUTH_USERID,AUTH_PANELTYPE
+  AUTH_SETTINGS, AUTH_USERID,AUTH_PANELTYPE,
+  AUTH_PAGES_DATA
 } from "../ActionTypes";
 
 export const setAuthSettings = (authSettings) => {
@@ -25,6 +26,16 @@ export const setAuthUserId = (
     type: AUTH_USERID,
     payload: {
       authUserId: authUserId,
+    },
+  };
+};
+export const setAuthPagesData = (
+  authPagesData
+) => {
+  return {
+    type: AUTH_PAGES_DATA,
+    payload: {
+      authPagesData: authPagesData,
     },
   };
 };

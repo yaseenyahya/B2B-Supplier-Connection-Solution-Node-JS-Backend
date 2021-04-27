@@ -6,13 +6,13 @@ import { useQuery } from "@apollo/react-hooks";
 import PanelType from "../auth/PanelType";
 import AdminPanel from "../components/adminPanel";
 import UserPanel from "../components/userPanel";
-import { setAuthSettings, setAuthUserId,setAuthPanelType } from "../store/actions/AuthActions";
+import { setAuthSettings, setAuthUserId,setAuthPanelType,setAuthPagesData } from "../store/actions/AuthActions";
 import { connect } from "react-redux";
 import resolveSettings from "../auth/resolveSettings";
 import {
 Container
 } from "@material-ui/core";
-import { RESET_PASSWORD_CHANGE_CONFIRM_PASSWORD_TEXT } from "../store/ActionTypes";
+
 const ProtectedRoute = (props, { ...rest }) => {
   const MeQuery = gql`
     query Me($accessToken: String) {
@@ -23,6 +23,7 @@ const ProtectedRoute = (props, { ...rest }) => {
         designation {
           paneltype
         }
+        pagesData
       }
     }
   `;
@@ -40,6 +41,12 @@ const ProtectedRoute = (props, { ...rest }) => {
      
       props.setAuthUserId(meQueryResult.me.id);
       props.setAuthPanelType(meQueryResult.me.designation.paneltype);
+      var parsedPagesData = [];
+      try {
+        parsedPagesData = JSON.parse(meQueryResult.me.pagesData);
+    
+      } catch (e) {}
+      props.setAuthPagesData(parsedPagesData);
       var parsedSettings = meQueryResult.me.settings;
       try {
         parsedSettings = JSON.parse(parsedSettings);
@@ -90,5 +97,6 @@ const ProtectedRoute = (props, { ...rest }) => {
 export default connect(null, {
   setAuthSettings,
   setAuthUserId,
-  setAuthPanelType
+  setAuthPanelType,
+  setAuthPagesData
 })(ProtectedRoute);

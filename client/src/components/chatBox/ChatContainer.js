@@ -155,12 +155,14 @@ const ChatContainer = (props) => {
       $pageId: String!
       $message: String!
       $outgoingMessageId: String!
+      $accesstoken: String
     ) {
       addchattofacebook(
         customerId: $customerId
         pageId: $pageId
         message: $message
         outgoingMessageId: $outgoingMessageId
+        accesstoken: $accesstoken
       ) {
         success
         error
@@ -435,28 +437,39 @@ const ChatContainer = (props) => {
 
   const addMessageInputText = () => {
     if (props.chatBoxMessageTextInput != "") {
-      var uid = guidGenerator();
-      addChatToFacebook({
-        variables: {
-          customerId: props.itemData.customerId,
-          pageId: props.itemData.pageId,
-          message: props.chatBoxMessageTextInput,
+      var pageDataForAccessToken = _.find(
+        props.authPagesData,
+        (pages) => pages.pageId == props.itemData.pageId
+      );
+      if (pageDataForAccessToken) {
+        var uid = guidGenerator();
+        addChatToFacebook({
+          variables: {
+            customerId: props.itemData.customerId,
+            pageId: props.itemData.pageId,
+            message: props.chatBoxMessageTextInput,
+            outgoingMessageId: uid,
+            accesstoken: pageDataForAccessToken.accesstoken,
+          },
+        });
+
+        messages.messages.push({
+          loading: true,
+          text: props.chatBoxMessageTextInput,
+          timestamp: null,
+          type: "outgoing",
+          messageId: null,
           outgoingMessageId: uid,
-        },
-      });
+        });
 
-      messages.messages.push({
-        loading: true,
-        text: props.chatBoxMessageTextInput,
-        timestamp: null,
-        type: "outgoing",
-        messageId: null,
-        outgoingMessageId: uid,
-      });
+        props.setChatBoxMessageData(_.cloneDeep(props.chatBoxMessageData));
 
-      props.setChatBoxMessageData(_.cloneDeep(props.chatBoxMessageData));
-
-      props.setChatBoxMessageTextInput("");
+        props.setChatBoxMessageTextInput("");
+      } else {
+        enqueueSnackbar(`${props.itemData.pageId} page id not found.`, {
+          variant: "error",
+        });
+      }
     }
   };
 
@@ -534,12 +547,14 @@ const ChatContainer = (props) => {
             >
               <span className={classes.chatsTabContainer}>
                 <FacebookAvatar
+                  key={props.itemData.pageId}
                   type={"page"}
                   item={props.itemData}
                   variant={"rounded"}
                   className={classes.chatsTabPageImage}
                 ></FacebookAvatar>
                 <FacebookAvatar
+                  key={props.itemData.customerId}
                   type={"customer"}
                   item={props.itemData}
                   variant={"rounded"}

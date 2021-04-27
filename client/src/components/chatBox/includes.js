@@ -55,15 +55,15 @@ export default class includes {
     pageId,
     chatBoxFacebookIDsWithProfileDetails,
     setChatBoxFacebookIDsWithProfileDetails,
-    callback
+    callback,
+    authPagesData
   ) {
     var isWait = false;
     while (!WindowFB) {
       isWait = true;
       await this.timer(1000);
     }
-    if(isWait)
-    await this.timer(2000);
+    if (isWait) await this.timer(2000);
     var result = null;
     var findItemAvail = _.find(
       chatBoxFacebookIDsWithProfileDetails,
@@ -71,28 +71,35 @@ export default class includes {
     );
 
     if (!findItemAvail) {
-      WindowFB &&
-        WindowFB.api(
-          `/${pageId}?fields=name,picture&access_token=${"EAAClnXIorPcBALaqEOTfZA2vZCLk0s4UUejZB95P2F9Eh9YU6aiwRMzEQA3X4CnYMRdLRPf5fC784E1I4CZCqjsfbScQBCPS4UeU5ShDvyynS0uOyIIHjNzuxopZCZAXrCjYGzZB7jZCrgax9IjUmlmAYAN44rIYblMnPa97ivUjRQZDZD"}`,
-          {
-            redirect: "0",
-          },
-          function (responsePicture) {
-            if (responsePicture && !responsePicture.error) {
-              result = {
-                type: "page",
-                id: pageId,
-                image: responsePicture.picture.data.url,
-                name: responsePicture.name,
-              };
-              chatBoxFacebookIDsWithProfileDetails.push(result);
-              setChatBoxFacebookIDsWithProfileDetails(
-                chatBoxFacebookIDsWithProfileDetails
-              );
-              callback(result);
+      var pageDataForAccessToken = _.find(
+        authPagesData,
+        (pages) => pages.pageId == pageId
+      );
+
+      if (pageDataForAccessToken) {
+        WindowFB &&
+          WindowFB.api(
+            `/${pageId}?fields=name,picture&access_token=${pageDataForAccessToken.accesstoken}`,
+            {
+              redirect: "0",
+            },
+            function (responsePicture) {
+              if (responsePicture && !responsePicture.error) {
+                result = {
+                  type: "page",
+                  id: pageId,
+                  image: responsePicture.picture.data.url,
+                  name: responsePicture.name,
+                };
+                chatBoxFacebookIDsWithProfileDetails.push(result);
+                setChatBoxFacebookIDsWithProfileDetails(
+                  chatBoxFacebookIDsWithProfileDetails
+                );
+                callback(result);
+              }
             }
-          }
-        );
+          );
+      }
     } else {
       callback(findItemAvail);
     }
@@ -100,14 +107,17 @@ export default class includes {
   async resolveClientInfo(
     WindowFB,
     customerId,
+    pageId,
     chatBoxFacebookIDsWithProfileDetails,
     setChatBoxFacebookIDsWithProfileDetails,
-    callback
+    callback,
+    authPagesData
   ) {
+    console.log("trigger avatar abroo");
     while (!WindowFB) {
       await this.timer(1000);
     }
-
+    console.log("trigger avatar abroo2");
     var result = null;
     var findItemAvail = _.find(
       chatBoxFacebookIDsWithProfileDetails,
@@ -115,30 +125,41 @@ export default class includes {
     );
 
     if (!findItemAvail) {
-    WindowFB &&
-      window.FB.api(
-        `/${customerId}?fields=first_name,last_name,profile_pic&access_token=${"EAAClnXIorPcBALaqEOTfZA2vZCLk0s4UUejZB95P2F9Eh9YU6aiwRMzEQA3X4CnYMRdLRPf5fC784E1I4CZCqjsfbScQBCPS4UeU5ShDvyynS0uOyIIHjNzuxopZCZAXrCjYGzZB7jZCrgax9IjUmlmAYAN44rIYblMnPa97ivUjRQZDZD"}`,
-        {
-          redirect: "0",
-        },
-        (responsePicture) => {
-          if (responsePicture && !responsePicture.error) {
-            result = {
-              type: "customer",
-              id: customerId,
-              image: responsePicture.profile_pic,
-              name:
-                responsePicture.first_name + " " + responsePicture.last_name,
-            };
-            chatBoxFacebookIDsWithProfileDetails.push(result);
-            setChatBoxFacebookIDsWithProfileDetails(
-              chatBoxFacebookIDsWithProfileDetails
-            );
-            callback(result);
-          }
-        }
+      console.log("trigger avatar abroo3");
+      var pageDataForAccessToken = _.find(
+        authPagesData,
+        (pages) => pages.pageId == pageId
       );
-    }else{
+      console.log(authPagesData);
+      console.log(pageId);
+      if (pageDataForAccessToken) {
+        WindowFB &&
+          window.FB.api(
+            `/${customerId}?fields=first_name,last_name,profile_pic&access_token=${pageDataForAccessToken.accesstoken}`,
+            {
+              redirect: "0",
+            },
+            (responsePicture) => {
+              if (responsePicture && !responsePicture.error) {
+                result = {
+                  type: "customer",
+                  id: customerId,
+                  image: responsePicture.profile_pic,
+                  name:
+                    responsePicture.first_name +
+                    " " +
+                    responsePicture.last_name,
+                };
+                chatBoxFacebookIDsWithProfileDetails.push(result);
+                setChatBoxFacebookIDsWithProfileDetails(
+                  chatBoxFacebookIDsWithProfileDetails
+                );
+                callback(result);
+              }
+            }
+          );
+      }
+    } else {
       callback(findItemAvail);
     }
   }

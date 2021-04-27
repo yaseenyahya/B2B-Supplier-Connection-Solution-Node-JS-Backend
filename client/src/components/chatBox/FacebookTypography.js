@@ -25,24 +25,31 @@ const FacebookTypography = (props) => {
       item.pageId,
       props.chatBoxFacebookIDsWithProfileDetails,
       props.setChatBoxFacebookIDsWithProfileDetails,
-      pageCallBack
+      pageCallBack,
+      props.authPagesData
     );
 
     includesObj.resolveClientInfo(
       window.FB,
       item.customerId,
+      item.pageId,
       props.chatBoxFacebookIDsWithProfileDetails,
       props.setChatBoxFacebookIDsWithProfileDetails,
-      customerCallBack
+      customerCallBack,
+      props.authPagesData
     );
   };
   const pageCallBack = (result) => {
-    setPageName(result.name);
-    props.pageNameChange &&  props.pageNameChange(result.name);
+    if (result) {
+      setPageName(result.name);
+      props.pageNameChange && props.pageNameChange(result.name);
+    }
   };
   const customerCallBack = (result) => {
-    setCustomerName(result.name);
-    props.customerNameChange &&  props.customerNameChange(result.name);
+    if (result) {
+      setCustomerName(result.name);
+      props.customerNameChange && props.customerNameChange(result.name);
+    }
   };
   return (
     <Typography className={props.className}>
@@ -54,6 +61,7 @@ const FacebookTypography = (props) => {
 const mapStateToProps = (state) => {
   return {
     ...state.ChatBoxReducer,
+    ...state.AuthReducer,
   };
 };
 export default connect(mapStateToProps, {

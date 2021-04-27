@@ -1,10 +1,11 @@
-import { AUTH_SETTINGS, AUTH_USERID, AUTH_PANELTYPE } from "../ActionTypes";
+import { AUTH_SETTINGS, AUTH_USERID, AUTH_PANELTYPE,AUTH_PAGES_DATA } from "../ActionTypes";
 
 export const AuthReducer = (
   state = {
     authSettings: null,
     authUserId: null,
     authPanelType: null,
+    authPagesData:[]
   },
   action
 ) => {
@@ -21,6 +22,10 @@ export const AuthReducer = (
       return Object.assign({}, state, {
         authPanelType: action.payload.authPanelType,
       });
+      case AUTH_PAGES_DATA:
+        return Object.assign({}, state, {
+          authPagesData: action.payload.authPagesData,
+        });
     default:
       return state;
   }
