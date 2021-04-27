@@ -47,6 +47,8 @@ function App() {
   const wsLink = new WebSocketLink({
    
     options: {
+      timeout: 600000,
+      minTimeout:600000,
       reconnect: true,
       lazy: true,
     },
@@ -70,8 +72,16 @@ function App() {
   wsLink.subscriptionClient.on("disconnected", () => {
     console.log("disconnected subs "  + new Date().toString());
   });
+  wsLink.subscriptionClient.on("onError", (error) => {
+    console.log(error.message + "  "  + new Date().toString());
+  });
+
+
+  console.log("timeout", wsLink.subscriptionClient.maxConnectTimeGenerator.duration) 
   wsLink.subscriptionClient.maxConnectTimeGenerator.duration = () =>
   wsLink.subscriptionClient.maxConnectTimeGenerator.max;
+
+  console.log("timeout after",  wsLink.subscriptionClient.maxConnectTimeGenerator.max) 
   const splitLink = split(
     ({ query }) => {
       const definition = getMainDefinition(query);

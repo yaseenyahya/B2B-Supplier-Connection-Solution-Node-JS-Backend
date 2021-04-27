@@ -140,11 +140,15 @@ const UserPanel = (props) => {
     if (props.userPanelChatOnline && props.authUserId) {
       const env = process.env.NODE_ENV || "development";
       const config = expressConfig[env];
-
+console.log("props.userPanelChatOnline, props.authUserId","triggered tryReconnect");
       props.wsLink.subscriptionClient.url = `${config.graphql_subscription_domain}:${config.port}/${config.graphql_subscription_endpoint}?userId=${props.authUserId}`;
       props.wsLink.subscriptionClient.tryReconnect();
+      //wsLink.subscriptionClient.maxConnectTimeGenerator.duration = () =>
+     // wsLink.subscriptionClient.maxConnectTimeGenerator.max;
       props.setUserpanelWsSubscriptionReady(true);
     } else {
+      console.log("props.userPanelChatOnline, props.authUserId","triggered close");
+     console.log("stauts",props.wsLink.subscriptionClient.checkConnection())
       props.wsLink.subscriptionClient.close();
       props.setUserpanelWsSubscriptionReady(false);
     }

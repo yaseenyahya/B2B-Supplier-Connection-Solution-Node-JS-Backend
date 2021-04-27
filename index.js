@@ -43,8 +43,9 @@ const server = new ApolloServer({
   resolvers: GraphQLResolvers_,
 
   subscriptions: {
+    keepAlive: 10000,
     onConnect: (connectionParams, webSocket, context) => {
-      console.log(webSocket.upgradeReq.url);
+      console.log(connectionParams);
       const agentId = webSocket.upgradeReq.url.replace(
         "/subscriptions?userId=",
         ""
