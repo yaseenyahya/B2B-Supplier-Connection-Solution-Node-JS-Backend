@@ -51,7 +51,11 @@ const server = new ApolloServer({
         ""
       );
       if (!_.find(chatCircleUsersWithChats, (item) => item.agentId == agentId))
-        chatCircleUsersWithChats.push({ agentId: agentId, chats: [] });
+           chatCircleUsersWithChats.push({
+           agentId: agentId,
+           chats: [],
+          });
+      
       console.log("user loggedin", agentId);
       console.log("chatCircleUsersWithChats", chatCircleUsersWithChats);
     },
@@ -70,8 +74,8 @@ const server = new ApolloServer({
 });
 //using one domain on server wit hsame port
 //if (process.env.NODE_ENV === "production") {
- // app.use(express.static(path.join(__dirname, "client/build")));
-   //app.get('*', (req, res) => {    res.sendfile(path.join(__dirname = 'client/build/index.html'));  })
+// app.use(express.static(path.join(__dirname, "client/build")));
+//app.get('*', (req, res) => {    res.sendfile(path.join(__dirname = 'client/build/index.html'));  })
 //}
 app.use(async (req, res, next) => {
   const accessToken = req.cookies["access-token"];
@@ -170,7 +174,7 @@ app.post("/webhook/", (req, res) => {
 
   // Checks this is an event from a page subscription
   if (body.object === "page") {
-    console.log(req.body);
+    console.log("facebook Message Recieve");
     var pageId = req.body.entry[0].id;
     var messaging_events = req.body.entry[0].messaging;
 
@@ -183,7 +187,7 @@ app.post("/webhook/", (req, res) => {
         var messageId = event_.message.mid;
         var messageText = event_.message.text;
         // Your Logic Replaces the following Line
-        getUserFromChatCircle(customerId).then((result) => {
+        getUserFromChatCircle(customerId).then(async (result) => {
           console.log("chat binding on userid", result);
           if (result) {
             console.log({
@@ -195,7 +199,7 @@ app.post("/webhook/", (req, res) => {
               messagetype: isPage ? "outgoing" : "incoming",
               agentId: result,
             });
-            GraphQLResolvers_.Mutation.addchatdetail(null, {
+            await GraphQLResolvers_.Mutation.addchatdetail(null, {
               customerId: customerId,
               pageId: pageId,
               messagetext: messageText,
@@ -238,6 +242,7 @@ app.post("/webhook/", (req, res) => {
 
 const getUserFromChatCircle = async (customerId) => {
   if (chatCircleUsersWithChats.length > 0) {
+    console.log("asdasdasd",customerId)
     let chatData = await db.chatdetails.findOne({
       where: {
         customerId: customerId,
