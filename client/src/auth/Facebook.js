@@ -1,4 +1,5 @@
 import expressConfig from "../config/express.json";
+
 export const Facebook =  {
   fbInt() {
     const env = process.env.NODE_ENV || "development";
@@ -12,8 +13,10 @@ export const Facebook =  {
         xfbml: true, // parse social plugins on this page
         version: "v2.1", // use version 2.1
       });
+     
+   
     };
-
+    
     // Load the SDK asynchronously
     (function (d, s, id) {
       var js,

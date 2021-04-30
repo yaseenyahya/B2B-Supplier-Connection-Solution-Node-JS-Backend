@@ -168,70 +168,15 @@ db.sequelize
     initialDatabaseEntryObj.insertInitialData(db);
   })
   .catch((error) => console.log("This error occured", error));
-
+var requestObjectQue = [];
 app.post("/webhook/", (req, res) => {
   let body = req.body;
-
+  
   // Checks this is an event from a page subscription
   if (body.object === "page") {
-    console.log("facebook Message Recieve");
-    var pageId = req.body.entry[0].id;
-    var messaging_events = req.body.entry[0].messaging;
-
-    for (i = 0; i < messaging_events.length; i++) {
-      var event_ = req.body.entry[0].messaging[i];
-      var isPage = pageId == event_.sender.id;
-      var customerId = isPage ? event_.recipient.id : event_.sender.id;
-      if (event_.message && event_.message.text) {
-        var timestamp = event_.timestamp;
-        var messageId = event_.message.mid;
-        var messageText = event_.message.text;
-        // Your Logic Replaces the following Line
-        getUserFromChatCircle(customerId).then(async (result) => {
-          console.log("chat binding on userid", result);
-          if (result) {
-            console.log({
-              customerId: customerId,
-              pageId: pageId,
-              messagetext: messageText,
-              messagetimestamp: timestamp,
-              messageId: messageId,
-              messagetype: isPage ? "outgoing" : "incoming",
-              agentId: result,
-            });
-            await GraphQLResolvers_.Mutation.addchatdetail(null, {
-              customerId: customerId,
-              pageId: pageId,
-              messagetext: messageText,
-              messagetimestamp: timestamp,
-              messageId: messageId,
-              messagetype: isPage ? "outgoing" : "incoming",
-              agentId: result,
-            });
-
-            var chatAgent = _.find(
-              chatCircleUsersWithChats,
-              (item) => item.agentId == result
-            );
-
-            if (chatAgent) {
-              if (
-                !_.find(
-                  chatAgent.chats,
-                  (item) =>
-                    item.customerId == customerId && item.pageId == pageId
-                )
-              )
-                chatAgent.chats.push({
-                  customerId: customerId,
-                  pageId: pageId,
-                });
-            }
-          }
-        });
-      }
-    }
-
+   
+    requestObjectQue.push(body);
+    startQuePollingIfNotStarted();
     // Returns a '200 OK' response to all requests
     res.status(200).send("EVENT_RECEIVED");
   } else {
@@ -240,6 +185,81 @@ app.post("/webhook/", (req, res) => {
   }
 });
 
+var queStartPolling = false;
+async function  startQuePollingIfNotStarted(){
+  if(requestObjectQue.length > 0 && !queStartPolling){
+     queStartPolling = true;
+    await pollMessage();
+    queStartPolling = false;
+
+  }
+}
+async function pollMessage(){
+  if(requestObjectQue.length > 0){
+  await checkMessage(requestObjectQue[0]);
+  requestObjectQue.splice(0,1);
+  await pollMessage();
+  }
+}
+async function checkMessage(body){
+  console.log("facebook Message Recieve");
+  var pageId = body.entry[0].id;
+  var messaging_events = body.entry[0].messaging;
+console.log(body)
+  for (i = 0; i < messaging_events.length; i++) {
+    var event_ = body.entry[0].messaging[i];
+    var isPage = pageId == event_.sender.id;
+    var customerId = isPage ? event_.recipient.id : event_.sender.id;
+    if (event_.message && event_.message.text) {
+      var timestamp = event_.timestamp;
+      var messageId = event_.message.mid;
+      var messageText = event_.message.text;
+      // Your Logic Replaces the following Line
+      var result = await getUserFromChatCircle(customerId);
+        console.log("chat binding on userid", result);
+        if (result) {
+          console.log({
+            customerId: customerId,
+            pageId: pageId,
+            messagetext: messageText,
+            messagetimestamp: timestamp,
+            messageId: messageId,
+            messagetype: isPage ? "outgoing" : "incoming",
+            agentId: result,
+          });
+          await GraphQLResolvers_.Mutation.addchatdetail(null, {
+            customerId: customerId,
+            pageId: pageId,
+            messagetext: messageText,
+            messagetimestamp: timestamp,
+            messageId: messageId,
+            messagetype: isPage ? "outgoing" : "incoming",
+            agentId: result,
+          });
+
+          var chatAgent = _.find(
+            chatCircleUsersWithChats,
+            (item) => item.agentId == result
+          );
+
+          if (chatAgent) {
+            if (
+              !_.find(
+                chatAgent.chats,
+                (item) =>
+                  item.customerId == customerId && item.pageId == pageId
+              )
+            )
+              chatAgent.chats.push({
+                customerId: customerId,
+                pageId: pageId,
+              });
+          }
+        }
+     
+    }
+  }
+}
 const getUserFromChatCircle = async (customerId) => {
   if (chatCircleUsersWithChats.length > 0) {
     console.log("asdasdasd",customerId)

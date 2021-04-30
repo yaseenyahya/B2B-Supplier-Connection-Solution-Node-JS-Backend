@@ -5,7 +5,8 @@
     "graphql_domain":"https://axonmediaservice.finalhostplan.com",
     "graphql_subscription_domain":"wss://axonmediaservice.finalhostplan.com",
     "graphql_subscription_endpoint":"subscriptions",
-    "facebook_app_id":"182095643716855"
+    "facebook_app_id":"182095643716855",
+    "facebook_app_secret":"5b84f6b082ac1cef631126802976275c"
 },
     "test": {
         "port": 8080,
@@ -13,7 +14,8 @@
         "graphql_domain":"http://localhost",
         "graphql_subscription_domain":"wss://axonmediaservice.finalhostplan.com",
         "graphql_subscription_endpoint":"subscriptions",
-        "facebook_app_id":"182095643716855"
+        "facebook_app_id":"182095643716855",
+        "facebook_app_secret":"5b84f6b082ac1cef631126802976275c"
 },
     "production": {
         "port": "",
@@ -21,6 +23,7 @@
         "graphql_domain":"https://greenmarketingcrm.herokuapp.com",
         "graphql_subscription_domain":"wss://greenmarketingcrm.herokuapp.com",
         "graphql_subscription_endpoint":"subscriptions",
-        "facebook_app_id":"182095643716855"
-}
+        "facebook_app_id":"182095643716855",
+    "facebook_app_secret":"5b84f6b082ac1cef631126802976275c"
+    }
 }

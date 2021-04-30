@@ -13,7 +13,9 @@ import {
 import { useSnackbar } from "notistack";
 import FacebookPagesSelectionModal from "./FacebookPagesSelectionModal";
 import _ from "lodash";
-import {Facebook} from "../../../auth/Facebook";
+import { Facebook } from "../../../auth/Facebook";
+import expressConfig from "../../../config/express.json";
+import axios from "axios";
 const useStyles = makeStyles((theme) => ({
   circularProgress: {
     width: 54,
@@ -81,6 +83,8 @@ const AddPages = (props) => {
   useEffect(() => {
     Facebook.fbInt();
   }, []);
+  const env = process.env.NODE_ENV || "development";
+  const config = expressConfig[env];
   return (
     <>
       {getPagesQueryLoading ? (
@@ -123,37 +127,64 @@ const AddPages = (props) => {
             title={"Pages"}
             onActionAddClick={
               props.authSettings && props.authSettings.Pages.Add_Pages
-                ? (oldData) => {
-                    window.FB.login((responseLogin) => {
+                ?  (oldData) => {
+             
+                    window.FB.login(
+                      async  (responseLogin) => {
                     
-                      if (responseLogin.status === "connected") {
-                        window.FB.api(
-                          `/${responseLogin.authResponse.userID}/accounts?access_token=${responseLogin.authResponse.accessToken}`,
-                          (responseAccount) => {
-                            console.log(responseAccount)
-                            if (responseAccount && !responseAccount.error) {
-                              var filterData = responseAccount.data;
-                              getPagesQueryResult.pages.map((item) => {
-                                filterData = _.filter(
-                                  filterData,
-                                  (responseData) =>
-                                    responseData.id != item.pageId
-                                );
-                              });
-
-                              props.setaddEditPagesModalPages(filterData);
-                              props.setAddEditPagesModalToggle(true);
-                            }else if(responseAccount && responseAccount.error){
-                              enqueueSnackbar(responseAccount.error.message, {
-                                variant: "error",
-                              });
+                        var longAccessToken = null;
+                        if (responseLogin.status === "connected") {
+                          try {
+                          const response = await axios
+                            .get(
+                        
+                              `https://graph.facebook.com/oauth/access_token?  
+                              grant_type=fb_exchange_token&          
+                              client_id=${config.facebook_app_id}&
+                              client_secret=${config.facebook_app_secret}&
+                              fb_exchange_token=${responseLogin.authResponse.accessToken}`
+                              )
+                              console.log("Long Live Access Token");
+                              longAccessToken = response.data.access_token;
+                            } catch (error) {
+                              console.log("long lived token error ",error)
                             }
-                          }
-                        );
-                      }
+                            
+                     if(longAccessToken){
+                       
+                          window.FB.api(
+                            `/${responseLogin.authResponse.userID}/accounts?access_token=${longAccessToken}`,
+                            (responseAccount) => {
+                              console.log(responseAccount);
+                              if (responseAccount && !responseAccount.error) {
+                                var filterData = responseAccount.data;
+                                console.log("pages_result", filterData);
+                                getPagesQueryResult.pages.map((item) => {
+                                  filterData = _.filter(
+                                    filterData,
+                                    (responseData) =>
+                                      responseData.id != item.pageId
+                                  );
+                                });
 
-                      //console.log(response.authResponse.accessToken);
-                    });
+                                props.setaddEditPagesModalPages(filterData);
+                                props.setAddEditPagesModalToggle(true);
+                              } else if (
+                                responseAccount &&
+                                responseAccount.error
+                              ) {
+                                enqueueSnackbar(responseAccount.error.message, {
+                                  variant: "error",
+                                });
+                              }
+                            }
+                          );
+                        }
+                      }
+                        //console.log(response.authResponse.accessToken);
+                      },
+                      { scope: "pages_show_list,pages_messaging" }
+                    );
                     // FB.login(function (response) {
                     // alert("asda");
                     //});
@@ -179,7 +210,7 @@ const AddPages = (props) => {
   );
 };
 const mapStateToProps = (state) => {
-  return { ...state.AddEditPagesModalReducer,...state.AuthReducer };
+  return { ...state.AddEditPagesModalReducer, ...state.AuthReducer };
 };
 
 export default connect(mapStateToProps, {
