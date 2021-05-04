@@ -1,6 +1,6 @@
 export const LocalStorage =  {
   getAdminPanelChatOnline() {
-    console.log("Asdasdahina",localStorage.getItem("adminPanelChatOnline"));
+    //console.log("Asdasdahina",localStorage.getItem("adminPanelChatOnline"));
     return JSON.parse(localStorage.getItem("adminPanelChatOnline"));
   },
   setAdminPanelChatOnline(value) {
@@ -14,5 +14,13 @@ export const LocalStorage =  {
   setUserPanelChatOnline(value) {
 
     localStorage.setItem("userPanelChatOnline", value);
+  },
+  getChatBoxFacebookIDsWithProfileDetails() {
+
+    return JSON.parse(localStorage.getItem("chatBoxFacebookIDsWithProfileDetails"));
+  },
+  setChatBoxFacebookIDsWithProfileDetails(value) {
+
+    localStorage.setItem("chatBoxFacebookIDsWithProfileDetails", JSON.stringify(value));
   }
 }

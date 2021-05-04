@@ -32,6 +32,8 @@ import { setRedirectToPath } from "../../store/actions/RedirectToPathActions";
 import SettingsMenu from "./SettingsMenu";
 import ChatBox from "../chatBox";
 import ChatBoxCustomerFormModal from "../chatBox/ChatBoxCustomerFormModal";
+import ChatSubscriptionStatus from "../chatBox/ChatSubscriptionStatus";
+
 const useStyles = makeStyles((theme) => ({
   mainContainer: {
     background: "white",
@@ -145,7 +147,7 @@ const UserPanel = (props) => {
       //wsLink.subscriptionClient.maxConnectTimeGenerator.duration = () =>
       // wsLink.subscriptionClient.maxConnectTimeGenerator.max;
       props.setUserpanelWsSubscriptionReady(true);
-    }  else {
+    } else {
       props.wsLink.subscriptionClient.url = undefined;
       props.wsLink.subscriptionClient.close(true, true);
       props.setUserpanelWsSubscriptionReady(false);
@@ -227,7 +229,7 @@ const UserPanel = (props) => {
               }
               label={props.userPanelChatOnline ? "Online" : "Offline"}
             />
-
+            <ChatSubscriptionStatus status={props.chatBoxSubscriptionStatus}/>
             <Box
               flex={1}
               display={"flex"}

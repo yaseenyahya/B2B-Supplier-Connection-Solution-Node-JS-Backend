@@ -133,6 +133,7 @@ module.exports = {
     chatlastdetailsbyid: async (parent, args, { req }) => {
       req.userID = verifyTokenWithUserID(args, req);
       if (req.userID == null) return null;
+      //moment().utc().add(5, "hours")
       const TODAY_START = new Date().setHours(0, 0, 0, 0);
       const NOW = new Date();
       var customerAndPageIds = await db.chatdetails.findAll({
@@ -140,7 +141,7 @@ module.exports = {
         group: ["customerId", "pageId"],
         where: {
           messagetimestamp: {
-            [Op.gt]: TODAY_START,
+           // [Op.gt]: TODAY_START,
             [Op.lt]: NOW,
           },
           agentId: req.userID,

@@ -6,12 +6,15 @@ import { useQuery } from "@apollo/react-hooks";
 import PanelType from "../auth/PanelType";
 import AdminPanel from "../components/adminPanel";
 import UserPanel from "../components/userPanel";
-import { setAuthSettings, setAuthUserId,setAuthPanelType,setAuthPagesData } from "../store/actions/AuthActions";
+import {
+  setAuthSettings,
+  setAuthUserId,
+  setAuthPanelType,
+  setAuthPagesData,
+} from "../store/actions/AuthActions";
 import { connect } from "react-redux";
 import resolveSettings from "../auth/resolveSettings";
-import {
-Container
-} from "@material-ui/core";
+import { Container } from "@material-ui/core";
 
 const ProtectedRoute = (props, { ...rest }) => {
   const MeQuery = gql`
@@ -38,19 +41,16 @@ const ProtectedRoute = (props, { ...rest }) => {
 
   useEffect(() => {
     if (meQueryResult && meQueryResult.me) {
-     
       props.setAuthUserId(meQueryResult.me.id);
       props.setAuthPanelType(meQueryResult.me.designation.paneltype);
       var parsedPagesData = [];
       try {
         parsedPagesData = JSON.parse(meQueryResult.me.pagesData);
-    
       } catch (e) {}
       props.setAuthPagesData(parsedPagesData);
       var parsedSettings = meQueryResult.me.settings;
       try {
         parsedSettings = JSON.parse(parsedSettings);
-    
       } catch (e) {}
       props.setAuthSettings(
         new resolveSettings().resolveSettings(
@@ -58,25 +58,44 @@ const ProtectedRoute = (props, { ...rest }) => {
           meQueryResult.me.designation.paneltype
         )
       );
-    
     }
   }, [meQueryResult]);
   const getPanelTypeComponent = (panelType, props_) => {
-
     switch (panelType) {
-      case PanelType.SUPERADMIN :
-        return <AdminPanel {...props_} />;
-        case PanelType.ADMIN:
-          return <AdminPanel {...props_} />;
+      case PanelType.SUPERADMIN:
+        return (
+          <AdminPanel
+            wsLink={props.wsLink}
+    
+            {...props_}
+          />
+        );
+      case PanelType.ADMIN:
+        return (
+          <AdminPanel
+            wsLink={props.wsLink}
+        
+            {...props_}
+          />
+        );
       case PanelType.AGENT:
-        return <UserPanel  wsLink={props.wsLink}/>;
+        return (
+          <UserPanel
+            wsLink={props.wsLink}
+
+          />
+        );
       default:
         return null;
     }
   };
 
-  return meQueryLoading ? <Container maxWidth={false} style={{background:"#1a2733",width: "100%",
-  height: "100vh"}}></Container> : (
+  return meQueryLoading ? (
+    <Container
+      maxWidth={false}
+      style={{ background: "#1a2733", width: "100%", height: "100vh" }}
+    ></Container>
+  ) : (
     <Route
       {...rest}
       render={(props) =>
@@ -98,5 +117,5 @@ export default connect(null, {
   setAuthSettings,
   setAuthUserId,
   setAuthPanelType,
-  setAuthPagesData
+  setAuthPagesData,
 })(ProtectedRoute);

@@ -11,6 +11,8 @@ import { split, HttpLink } from "@apollo/client";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { useState } from "react";
+import {setChatBoxSubscriptionStatus} from "./store/actions/ChatBoxActions";
 //import { SubscriptionClient } from "subscriptions-transport-ws";
 const theme = createMuiTheme({
   palette: {
@@ -45,43 +47,48 @@ function App() {
     credentials: "include",
   });
   const wsLink = new WebSocketLink({
-   
     options: {
       timeout: 600000,
-      minTimeout:600000,
+      minTimeout: 600000,
       reconnect: true,
       lazy: true,
     },
   });
+  
   wsLink.subscriptionClient.on("connecting", () => {
+    store.dispatch(setChatBoxSubscriptionStatus(false));
     console.log("connecting subs " + new Date().toString());
   });
-  
+
   wsLink.subscriptionClient.on("connected", () => {
-    console.log("connected subs "  + new Date().toString());
+    store.dispatch(setChatBoxSubscriptionStatus(true));
+    console.log("connected subs " + new Date().toString());
   });
-  
+
   wsLink.subscriptionClient.on("reconnecting", () => {
-    console.log("reconnecting subs "  + new Date().toString());
+    store.dispatch(setChatBoxSubscriptionStatus(false));
+    console.log("reconnecting subs " + new Date().toString());
   });
-  
+
   wsLink.subscriptionClient.on("reconnected", () => {
-    console.log("reconnected subs "  + new Date().toString());
+    store.dispatch(setChatBoxSubscriptionStatus(true));
+    console.log("reconnected subs " + new Date().toString());
   });
-  
+
   wsLink.subscriptionClient.on("disconnected", () => {
-    console.log("disconnected subs "  + new Date().toString());
+    store.dispatch(setChatBoxSubscriptionStatus(false));
+    console.log("disconnected subs " + new Date().toString());
   });
   wsLink.subscriptionClient.on("onError", (error) => {
-    console.log(error.message + "  "  + new Date().toString());
+    store.dispatch(setChatBoxSubscriptionStatus(false));
+    console.log(error.message + "  " + new Date().toString());
   });
 
-
-  console.log("timeout", wsLink.subscriptionClient.maxConnectTimeGenerator.duration) 
+ 
   wsLink.subscriptionClient.maxConnectTimeGenerator.duration = () =>
-  wsLink.subscriptionClient.maxConnectTimeGenerator.max;
+    wsLink.subscriptionClient.maxConnectTimeGenerator.max;
 
-  console.log("timeout after",  wsLink.subscriptionClient.maxConnectTimeGenerator.max) 
+
   const splitLink = split(
     ({ query }) => {
       const definition = getMainDefinition(query);
@@ -99,7 +106,7 @@ function App() {
 
     cache: new InMemoryCache(),
   });
-  
+
   return (
     <BrowserRouter>
       <ApolloProvider client={ApolloClient_}>
@@ -118,7 +125,10 @@ function App() {
                   />
                 )}
               ></Route>
-              <ProtectedRoute wsLink={wsLink} path="/"></ProtectedRoute>
+              <ProtectedRoute
+                wsLink={wsLink}
+                path="/"
+              ></ProtectedRoute>
 
               <Route path="*" render={() => <div>404</div>}></Route>
             </Switch>

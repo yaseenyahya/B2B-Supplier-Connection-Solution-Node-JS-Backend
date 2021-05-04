@@ -9,10 +9,11 @@ import {
   CHAT_BOX_MASSAGE_TEXT_INPUT ,
   CHAT_BOX_WINDOW_SIZE ,
   CHAT_BOX_RECENT_CHAT_LIST_SEARCH_FILTER_DATA ,
-  CHAT_BOX_FACEBOOK_IDS_WITH_PROFILE_DETAILS
+  CHAT_BOX_FACEBOOK_IDS_WITH_PROFILE_DETAILS,
+  CHAT_BOX_SUBSCRIPTION_STATUS
 
 } from "../ActionTypes";
-
+import {LocalStorage} from "../../auth/LocalStorage";
 export const setChatBoxRecentSearchInputText = (chatBoxRecentSearchInputText) => {
   return {
     type: CHAT_BOX_RECENT_SEARCH_INPUT_TEXT,
@@ -94,10 +95,20 @@ export const setChatBoxRecentChatListSearchSearchFilterData = (chatBoxRecentChat
   };
 };
 export const setChatBoxFacebookIDsWithProfileDetails = (chatBoxFacebookIDsWithProfileDetails) => {
+  LocalStorage.setChatBoxFacebookIDsWithProfileDetails(chatBoxFacebookIDsWithProfileDetails);
   return {
     type:   CHAT_BOX_FACEBOOK_IDS_WITH_PROFILE_DETAILS,
     payload: {
       chatBoxFacebookIDsWithProfileDetails: chatBoxFacebookIDsWithProfileDetails,
+    },
+  };
+};
+export const setChatBoxSubscriptionStatus = (chatBoxSubscriptionStatus) => {
+ 
+  return {
+    type:   CHAT_BOX_SUBSCRIPTION_STATUS,
+    payload: {
+      chatBoxSubscriptionStatus: chatBoxSubscriptionStatus,
     },
   };
 };

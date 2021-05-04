@@ -9,9 +9,10 @@ import {
   CHAT_BOX_MASSAGE_TEXT_INPUT,
   CHAT_BOX_WINDOW_SIZE,
   CHAT_BOX_RECENT_CHAT_LIST_SEARCH_FILTER_DATA,
-  CHAT_BOX_FACEBOOK_IDS_WITH_PROFILE_DETAILS
+  CHAT_BOX_FACEBOOK_IDS_WITH_PROFILE_DETAILS,
+  CHAT_BOX_SUBSCRIPTION_STATUS
 } from "../ActionTypes";
-
+import {LocalStorage} from "../../auth/LocalStorage";
 export const ChatBoxReducer = (
   state = {
     chatBoxRecentSearchInputText: "",
@@ -30,7 +31,8 @@ export const ChatBoxReducer = (
       height: undefined,
     },
     chatBoxRecentChatListSearchSearchFilterData: null,
-    chatBoxFacebookIDsWithProfileDetails:[]
+    chatBoxFacebookIDsWithProfileDetails:LocalStorage.getChatBoxFacebookIDsWithProfileDetails() || [],
+    chatBoxSubscriptionStatus:false
   },
   action
 ) => {
@@ -85,6 +87,11 @@ export const ChatBoxReducer = (
           chatBoxFacebookIDsWithProfileDetails:
             action.payload.chatBoxFacebookIDsWithProfileDetails,
         });
+        case CHAT_BOX_SUBSCRIPTION_STATUS:
+          return Object.assign({}, state, {
+            chatBoxSubscriptionStatus:
+              action.payload.chatBoxSubscriptionStatus,
+          });
     default:
       return state;
   }
