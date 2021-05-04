@@ -173,9 +173,9 @@ const ChatBox = (props) => {
   }, []);
 
   useEffect(() => {
-    if(props.userPanelChatOnline)
+    if(props.chatBoxSubscriptionStatus)
     getChatlastDetails();
-  }, [props.userPanelChatOnline]);
+  }, [props.chatBoxSubscriptionStatus]);
   useEffect(() => {
     if (
       chatLastDetailsQueryResult &&
@@ -192,10 +192,7 @@ const ChatBox = (props) => {
 
         messageText =
           item.messagetype == "followuplabel"
-            ? `${messageText[0]} at ${moment(
-                messageText[1],
-                "yyyy-MM-DDTHH:mm"
-              ).format("yyyy-MM-DD hh:mm A")}`
+            ? `${messageText[0]} at ${moment.unix(messageText[1] / 1000).format("yyyy-MM-DD hh:mm A")}`
             : messageText;
 
         chatBoxRecentChatListData.push({

@@ -45,17 +45,35 @@ const server = new ApolloServer({
   subscriptions: {
     keepAlive: 10000,
     onConnect: (connectionParams, webSocket, context) => {
-      console.log(connectionParams);
       const agentId = webSocket.upgradeReq.url.replace(
         "/subscriptions?userId=",
         ""
       );
+      if (chatCircleUsersWithChats.length == 0) {
+        GraphQLResolvers_.Mutation.getofflinechatdetailanddeleteall().then(
+          async (result) => {
+            for(var i = 0;i < result.length;i++){
+              await GraphQLResolvers_.Mutation.addchatdetail(null, {
+                customerId: result[i].customerId,
+                pageId: result[i].pageId,
+                messagetext: result[i].messagetext,
+                messagetimestamp: result[i].messagetimestamp,
+                messageId: result[i].messageId,
+                messagetype: result[i].messagetype,
+                agentId: agentId,
+              });
+            }
+        
+          }
+        );
+      }
+
       if (!_.find(chatCircleUsersWithChats, (item) => item.agentId == agentId))
-           chatCircleUsersWithChats.push({
-           agentId: agentId,
-           chats: [],
-          });
-      
+        chatCircleUsersWithChats.push({
+          agentId: agentId,
+          chats: [],
+        });
+
       console.log("user loggedin", agentId);
       console.log("chatCircleUsersWithChats", chatCircleUsersWithChats);
     },
@@ -171,10 +189,9 @@ db.sequelize
 var requestObjectQue = [];
 app.post("/webhook/", (req, res) => {
   let body = req.body;
-  
+
   // Checks this is an event from a page subscription
   if (body.object === "page") {
-   
     requestObjectQue.push(body);
     startQuePollingIfNotStarted();
     // Returns a '200 OK' response to all requests
@@ -186,26 +203,25 @@ app.post("/webhook/", (req, res) => {
 });
 
 var queStartPolling = false;
-async function  startQuePollingIfNotStarted(){
-  if(requestObjectQue.length > 0 && !queStartPolling){
-     queStartPolling = true;
+async function startQuePollingIfNotStarted() {
+  if (requestObjectQue.length > 0 && !queStartPolling) {
+    queStartPolling = true;
     await pollMessage();
     queStartPolling = false;
-
   }
 }
-async function pollMessage(){
-  if(requestObjectQue.length > 0){
-  await checkMessage(requestObjectQue[0]);
-  requestObjectQue.splice(0,1);
-  await pollMessage();
+async function pollMessage() {
+  if (requestObjectQue.length > 0) {
+    await checkMessage(requestObjectQue[0]);
+    requestObjectQue.splice(0, 1);
+    await pollMessage();
   }
 }
-async function checkMessage(body){
+async function checkMessage(body) {
   console.log("facebook Message Recieve");
   var pageId = body.entry[0].id;
   var messaging_events = body.entry[0].messaging;
-console.log(body)
+  console.log(body);
   for (i = 0; i < messaging_events.length; i++) {
     var event_ = body.entry[0].messaging[i];
     var isPage = pageId == event_.sender.id;
@@ -216,71 +232,70 @@ console.log(body)
       var messageText = event_.message.text;
       // Your Logic Replaces the following Line
       var result = await getUserFromChatCircle(customerId);
-        console.log("chat binding on userid", result);
-        if (result) {
-          console.log({
-            customerId: customerId,
-            pageId: pageId,
-            messagetext: messageText,
-            messagetimestamp: timestamp,
-            messageId: messageId,
-            messagetype: isPage ? "outgoing" : "incoming",
-            agentId: result,
-          });
-          await GraphQLResolvers_.Mutation.addchatdetail(null, {
-            customerId: customerId,
-            pageId: pageId,
-            messagetext: messageText,
-            messagetimestamp: timestamp,
-            messageId: messageId,
-            messagetype: isPage ? "outgoing" : "incoming",
-            agentId: result,
-          });
+      console.log("chat binding on userid", result);
+      if (result) {
+ 
+        await GraphQLResolvers_.Mutation.addchatdetail(null, {
+          customerId: customerId,
+          pageId: pageId,
+          messagetext: messageText,
+          messagetimestamp: timestamp,
+          messageId: messageId,
+          messagetype: isPage ? "outgoing" : "incoming",
+          agentId: result,
+        });
 
-          var chatAgent = _.find(
-            chatCircleUsersWithChats,
-            (item) => item.agentId == result
-          );
+        var chatAgent = _.find(
+          chatCircleUsersWithChats,
+          (item) => item.agentId == result
+        );
 
-          if (chatAgent) {
-            if (
-              !_.find(
-                chatAgent.chats,
-                (item) =>
-                  item.customerId == customerId && item.pageId == pageId
-              )
+        if (chatAgent) {
+          if (
+            !_.find(
+              chatAgent.chats,
+              (item) => item.customerId == customerId && item.pageId == pageId
             )
-              chatAgent.chats.push({
-                customerId: customerId,
-                pageId: pageId,
-              });
-          }
+          )
+            chatAgent.chats.push({
+              customerId: customerId,
+              pageId: pageId,
+            });
         }
-     
+      } else {
+        await GraphQLResolvers_.Mutation.addofflinechatdetail(null, {
+          customerId: customerId,
+          pageId: pageId,
+          messagetext: messageText,
+          messagetimestamp: timestamp,
+          messageId: messageId,
+          messagetype: isPage ? "outgoing" : "incoming",
+        });
+      }
     }
   }
 }
 const getUserFromChatCircle = async (customerId) => {
+  let chatData = await db.chatdetails.findOne({
+    where: {
+      customerId: customerId,
+    },
+  });
+
+  if (chatData) {
+    //agent last chated with customer
+    // var agentIsOnline = _.find(
+    //   chatCircleUsersWithChats,
+    //   (item) => item.agentId == chatData.agentId
+    //  );
+
+    // if (agentIsOnline) {
+    //   return agentIsOnline.agentId;
+    // }
+    return chatData.agentId;
+  }
   if (chatCircleUsersWithChats.length > 0) {
-    console.log("asdasdasd",customerId)
-    let chatData = await db.chatdetails.findOne({
-      where: {
-        customerId: customerId,
-      },
-    });
-
-    if (chatData) {
-      //agent last chated with customer
-      // var agentIsOnline = _.find(
-      //   chatCircleUsersWithChats,
-      //   (item) => item.agentId == chatData.agentId
-      //  );
-
-      // if (agentIsOnline) {
-      //   return agentIsOnline.agentId;
-      // }
-      return chatData.agentId;
-    }
+   
     //agent have less chats
     var chatCircleUsersWithChatsTemp = _.cloneDeep(chatCircleUsersWithChats);
     chatCircleUsersWithChatsTemp.sort(function (a, b) {

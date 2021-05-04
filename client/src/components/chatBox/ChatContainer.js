@@ -337,10 +337,7 @@ const ChatContainer = (props) => {
 
           messageText =
             messages.messagetype == "followuplabel"
-              ? `${messageText[0]} at ${moment(
-                  messageText[1],
-                  "yyyy-MM-DDTHH:mm"
-                ).format("yyyy-MM-DD hh:mm A")}`
+              ? `${messageText[0]} at ${moment.unix(messageText[1] / 1000).format("yyyy-MM-DD hh:mm A")}`
               : messageText;
 
           chatData.messages.push({
@@ -373,9 +370,9 @@ const ChatContainer = (props) => {
   }, [props.itemData]);
 
   useEffect(() => {
-    if (props.userPanelChatOnline)
+    if (props.chatBoxSubscriptionStatus)
       if (props.itemData) callChatDetailsByAgentCutomerPageId();
-  }, [props.userPanelChatOnline]);
+  }, [props.chatBoxSubscriptionStatus]);
 
   const callChatDetailsByAgentCutomerPageId = () => {
     chatDetailsByAgentCutomerPageId({
@@ -456,7 +453,7 @@ const ChatContainer = (props) => {
         messages.messages.push({
           loading: true,
           text: props.chatBoxMessageTextInput,
-          timestamp: null,
+          timestamp: moment().unix() * 1000,
           type: "outgoing",
           messageId: null,
           outgoingMessageId: uid,
@@ -506,7 +503,7 @@ const ChatContainer = (props) => {
                       "Follow Up",
                       props.followUpDialogDateTime,
                     ]),
-                    messagetimestamp: new Date().toString(),
+                    messagetimestamp: (moment().unix() * 1000).toString(),
                     messagetype: "followuplabel",
                     agentId: props.authUserId,
                     alternateagentId: props.authUserId,
@@ -741,7 +738,7 @@ const ChatContainer = (props) => {
                           pageId: props.itemData.pageId,
                           messageId: null,
                           messagetext: item.text,
-                          messagetimestamp: new Date().toString(),
+                          messagetimestamp: (moment().unix() * 1000).toString(),
                           messagetype: "label",
                           agentId: props.authUserId,
                           alternateagentId: props.authUserId,

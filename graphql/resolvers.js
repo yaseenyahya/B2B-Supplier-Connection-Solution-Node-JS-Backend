@@ -141,7 +141,7 @@ module.exports = {
         group: ["customerId", "pageId"],
         where: {
           messagetimestamp: {
-           // [Op.gt]: TODAY_START,
+            // [Op.gt]: TODAY_START,
             [Op.lt]: NOW,
           },
           agentId: req.userID,
@@ -194,9 +194,8 @@ module.exports = {
 
       chatFollowUpDetail.forEach((element) => {
         var textparse = JSON.parse(element.messagetext);
-        var dateOfFollowUp = moment(textparse[1], "yyyy-MM-DDTHH:mm").utc();
-        var CurrentDate = moment().utc().add(5, "hours");
-
+        var dateOfFollowUp = moment(moment.unix(textparse[1] / 1000));
+        var CurrentDate = moment();
 
         if (CurrentDate.diff(dateOfFollowUp) >= 0)
           followUpdata.push({
@@ -407,6 +406,66 @@ module.exports = {
         error: null,
       };
     },
+    getofflinechatdetailanddeleteall: async (parent, args) => {
+      var result = await db.offlinechatdetails.findAll();
+
+      db.offlinechatdetails.destroy({ truncate: true });
+
+      return result;
+    },
+    addofflinechatdetail: async (parent, args) => {
+      //  req.userID = verifyTokenWithUserID(args, req);
+      // if (req.userID == null) return null;
+
+      let errorEmptyCustomerId = false;
+      let errorEmptyPageId = false;
+      let errorEmptyMessageText = false;
+      let errorEmptMessageTimestamp = false;
+      let errorEmptyMessageType = false;
+
+      errorEmptyCustomerId = validator.isEmpty(args.customerId);
+      errorEmptyPageId = validator.isEmpty(args.pageId);
+      errorEmptyMessageText = validator.isEmpty(args.messagetext);
+      //errorEmptMessageTimestamp = validator.isEmpty(args.messagetimestamp);
+      errorEmptyMessageType = validator.isEmpty(args.messagetype);
+
+      if (
+        !errorEmptyCustomerId &&
+        !errorEmptyPageId &&
+        !errorEmptyMessageText &&
+        !errorEmptMessageTimestamp &&
+        !errorEmptyMessageType 
+  
+      ) {
+        var insertData = {
+          customerId: args.customerId,
+          pageId: args.pageId,
+          messageId: args.messageId,
+          messagetext: args.messagetext,
+          messagetimestamp: isNaN(parseInt(args.messagetimestamp))
+            ? args.messagetimestamp
+            : parseInt(args.messagetimestamp),
+          messagetype: args.messagetype,
+        };
+        await db.offlinechatdetails.create(insertData);
+      }
+      return {
+        success:
+          !errorEmptyCustomerId &&
+          !errorEmptyPageId &&
+          !errorEmptyMessageText &&
+          !errorEmptMessageTimestamp &&
+          !errorEmptyMessageType,
+        error:
+          errorEmptyCustomerId ||
+          errorEmptyPageId ||
+          errorEmptyMessageText ||
+          errorEmptMessageTimestamp ||
+          errorEmptyMessageType
+            ? "String can not be empty."
+            : null,
+      };
+    },
     addchatdetail: async (parent, args) => {
       //  req.userID = verifyTokenWithUserID(args, req);
       // if (req.userID == null) return null;
@@ -438,7 +497,9 @@ module.exports = {
           pageId: args.pageId,
           messageId: args.messageId,
           messagetext: args.messagetext,
-          messagetimestamp: args.messagetimestamp,
+          messagetimestamp: isNaN(parseInt(args.messagetimestamp))
+            ? args.messagetimestamp
+            : parseInt(args.messagetimestamp),
           messagetype: args.messagetype,
           agentId: args.agentId,
           alternateagentId: args.alternateagentId,

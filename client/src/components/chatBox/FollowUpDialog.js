@@ -28,7 +28,7 @@ const FollowUpDialog = (props) => {
   const classes = useStyles();
   useEffect(() => {
     if(props.followUpDialogToggle)
-    props.setFollowUpDialogDateTime(moment().format("yyyy-MM-DDTHH:mm"));
+    props.setFollowUpDialogDateTime(moment().unix() * 1000);
   }, [props.followUpDialogToggle]);
   return (
     <Dialog
@@ -45,14 +45,14 @@ const FollowUpDialog = (props) => {
           <TextField
             id="datetime-local"
             type="datetime-local"
-            defaultValue={props.followUpDialogDateTime}
+            defaultValue={moment.unix(props.followUpDialogDateTime / 1000).format("yyyy-MM-DDTHH:mm")}
             InputProps={{
               inputProps: { min: moment().format("yyyy-MM-DDTHH:mm") },
             }}
             className={classes.textField}
             onChange={(e) => {
               props.setFollowUpDialogDateTime(
-                moment(e.target.value, "yyyy-MM-DDTHH:mm").format("yyyy-MM-DDTHH:mm")
+                moment(e.target.value, "yyyy-MM-DDTHH:mm").unix() * 1000
               );
             }}
             InputLabelProps={{

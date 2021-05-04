@@ -15,7 +15,15 @@ module.exports = gql`
     alternateagentId: ID
     read: Int
   }
-
+  type OfflineChatDetails {
+    id: ID
+    customerId: String
+    pageId: String
+    messageId: String
+    messagetext: String
+    messagetimestamp: String
+    messagetype: String
+  }
   input pages_insert_input {
     name: String
     pageId: String
@@ -258,6 +266,22 @@ module.exports = gql`
       agentId: ID!
       alternateagentId: ID
     ): QueryStatus
+    addofflinechatdetail(
+      customerId: String!
+      pageId: String!
+      messageId: String
+      messagetext: String!
+      messagetimestamp: String!
+      messagetype: String!
+    ): QueryStatus
+    getofflinechatdetailanddeleteall(
+      customerId: String!
+      pageId: String!
+      messageId: String
+      messagetext: String!
+      messagetimestamp: String!
+      messagetype: String!
+    ): [OfflineChatDetails]
     addchattofacebook(
       customerId: String!
       pageId: String!

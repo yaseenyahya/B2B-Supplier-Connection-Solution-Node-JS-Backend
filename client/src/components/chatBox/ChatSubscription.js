@@ -68,20 +68,34 @@ const ChatSubscription = (props) => {
         messageText =
           chatDetailAddedSubscriptionResult.chatdetailadded.messagetype ==
           "followuplabel"
-            ? `${messageText[0]} at ${moment(
-                messageText[1],
-                "yyyy-MM-DDTHH:mm"
-              ).format("yyyy-MM-DD hh:mm A")}`
+            ? `${messageText[0]} at ${moment
+                .unix(messageText[1] / 1000)
+                .format("yyyy-MM-DD hh:mm A")}`
             : messageText;
 
         if (prevChatData) {
-          var findMessageIfExistByMessageId = _.find(
-            prevChatData.messages,
-            (item) =>
-              item.messageId ==
-              chatDetailAddedSubscriptionResult.chatdetailadded.messageId
+          var AddData = false;
+          if (
+            chatDetailAddedSubscriptionResult.chatdetailadded.messagetype ==
+              "followuplabel" ||
+            chatDetailAddedSubscriptionResult.chatdetailadded.messagetype ==
+              "label"
+          ) {
+            AddData = true;
+          } else {
+            var findMessageIfExistByMessageId = _.find(
+              prevChatData.messages,
+              (item) =>
+                item.messageId ==
+                chatDetailAddedSubscriptionResult.chatdetailadded.messageId
+            );
+            AddData = !findMessageIfExistByMessageId;
+          }
+          console.log(
+            "chatDetailAddedSubscriptionResult.chatdetailadded",
+            chatDetailAddedSubscriptionResult.chatdetailadded
           );
-          if (!findMessageIfExistByMessageId) {
+          if (AddData) {
             prevChatData.messages.push({
               loading: false,
               messageId:
