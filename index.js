@@ -63,7 +63,7 @@ const httpServer = http.createServer(app);
 httpServer
   .listen(process.env.PORT, () => {
     console.log(
-      `🚀 Server ready at http://localhost:${process.env.PORT}${server.graphqlPath}`
+      `(${process.env.NODE_ENV}) 🚀 Server ready at http://localhost:${process.env.PORT}${server.graphqlPath}`
     );
   })
   .on("error", (err) => {
