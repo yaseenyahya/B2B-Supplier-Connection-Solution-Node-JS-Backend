@@ -11,19 +11,23 @@
     "crypto": "^1.0.1",
     "express": "^4.17.1",
     "express-samesite-default": "^1.0.6",
+    "global": "^4.4.0",
     "graphql": "^15.5.0",
     "graphql-redis-subscriptions": "^2.3.1",
+    "helmet": "^5.1.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
-    "mysql2": "^2.2.5",
+    "mysql2": "2.2.5",
     "node-env-run": "^4.0.2",
     "nodemailer": "^6.5.0",
-    "sequelize": "^6.5.0"
+    "sequelize": "^6.20.1",
+    "sequelize-auto-migrations": "^1.0.3"
   },
   "scripts": {
     "server": "set HTTPS=true && node-env-run index.js --exec nodemon | pino-colada",
     "start": "node-env-run index.js",
-    "heroku-postbuild_____": "cd ./client && NPM_CONFIG_PRODUCTION=false && yarn  && yarn build "
+    "heroku-postbuild_____": "cd ./client && NPM_CONFIG_PRODUCTION=false && yarn  && yarn build ",
+    "uglifyjs": "uglifyjs-folder js -eo jsm"
   },
   "devDependencies": {
     "express-pino-logger": "^6.0.0",
