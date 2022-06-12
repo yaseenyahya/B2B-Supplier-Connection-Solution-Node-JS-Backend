@@ -22,7 +22,7 @@
     "nodemailer": "^6.5.0",
     "sequelize": "^6.20.1",
     "sequelize-auto-migrations": "^1.0.3",
-    "sequelize-cli":"^6.4.0"
+    "sequelize-cli": "^6.4.1"
   },
   "scripts": {
     "server": "set HTTPS=true && node-env-run index.js --exec nodemon | pino-colada",
