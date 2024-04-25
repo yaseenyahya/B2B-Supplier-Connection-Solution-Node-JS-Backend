@@ -12,7 +12,8 @@
         "password": "",
         "database": "react_sequelize_test",
         "host": "",
-        "dialect": "mysql"
+        "dialect": "mysql",
+        "logging":false
     },
     "production": {
         "username": "bc4d1f8a996bbf",
