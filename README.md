@@ -18,15 +18,9 @@ Wareport is a B2B solution designed to connect regional suppliers seamlessly. Bu
 
 ## Screenshots
 
-![Screenshot 1](screenshot1.jpeg)
 
-
-![Screenshot 2](screenshot2.jpeg)
-
-
-![Screenshot 3](screenshot3.jpeg)
-
-
-![Screenshot 4](screenshot4.jpeg)
-
+<img src="screenshot1.jpeg" alt="Screenshot 1" width="200" >
+<img src="screenshot2.jpeg" alt="Screenshot 2" width="200" >
+<img src="screenshot3.jpeg" alt="Screenshot 3" width="200" >
+<img src="screenshot4.jpeg" alt="Screenshot 4" width="200" >
 
