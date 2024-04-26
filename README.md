@@ -1,6 +1,6 @@
-# Wareport - B2B Supplier Connection Solution (Backend Node.js)
+# B2B Supplier Connection Solution (Backend Node.js)
 
-Wareport is a B2B solution designed to connect regional suppliers seamlessly. Built using React Native for the frontend and Node.js for the backend, Wareport streamlines the procurement process, making it efficient and convenient for businesses.
+This B2B solution designed to connect regional suppliers seamlessly. Built using React Native for the frontend and Node.js for the backend, Wareport streamlines the procurement process, making it efficient and convenient for businesses.
 
 ## Features
 
